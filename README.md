@@ -22,7 +22,7 @@ As duas funções principais são `comprimir` e `descomprimir`...
 
 No final, espera-se que o programa consiga ganhar de 2% a 30% de bits a menos, dependendo do tamanho do texto passado.
 
-#bitpack
+# bitpack
 
 Comprime inteiros em bites
 
