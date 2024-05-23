@@ -2,7 +2,7 @@
 
 Compressor que trabalha com a redução de bits de um arquivo.
 
-# Funcionamento
+## Funcionamento
 
 1. Um texto é selecionado, por exemplo, "cab";
 
@@ -21,5 +21,27 @@ Compressor que trabalha com a redução de bits de um arquivo.
 As duas funções principais são `comprimir` e `descomprimir`...
 
 No final, espera-se que o programa consiga ganhar de 2% a 30% de bits a menos, dependendo do tamanho do texto passado.
+
+#bitpack
+
+Comprime inteiros em bites
+
+## Funcionamento
+
+```
+b = bitpack()
+b.compress([23, 41, 21, 255])
+print(b.memory)
+print(b.lenth)
+print(b.lenth_bites)
+b.save()
+b.to_bin()
+print(b.real)
+
+a = bitpack()
+#resp = a.decompress(b.real, b.lenth_bites)
+resp = a.read(b.lenth_bites)
+print(resp)
+```
 
 
