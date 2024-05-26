@@ -109,5 +109,3 @@ class bitpack:
         Mostra o tamanho em byts usado para armazenar a informação
         """
         return self.__lenth
-
-a = bitpack()
