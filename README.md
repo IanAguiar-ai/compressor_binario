@@ -28,6 +28,30 @@ Comprime inteiros em bites
 
 ## Funcionamento
 
+Objeto:
+
+```
+instancia = bitpack()
+```
+
+Variáveis do objeto:
+
+```
+instancia.memory:str ; EX: "0011100011101000000000011011010110010010"
+instancia.lenth_bites:list ; EX: [6, 7, 20, 7]
+instancia.real:bin ; EX: b"8\xe8\x01\xb5\x92"
+```
+
+Funções do objeto:
+
+```
+instancia.compress(values:list)
+instancia.save(name:str)
+instancia.read(lenth_bytes:list, name:str)
+instancia.decompress(value:str, lenth_bytes:list)
+len(instancia)
+```
+
 ### Criar objeto
 
 ```
@@ -81,10 +105,25 @@ b.decompress(a)
 É passado já na criação da instancia do objeto o tamanho em bits para cada variável:
 
 ```
-a = bitpack(values = [14, 29, 875, 18], lenth_bites = [6, 7, 20, 7])
+tamanho:list = [6, 7, 20, 7]
+#000000 0000000 00000000000000000000 0000000 <- 40 bits ou 5 bytes
+#2**6 = 64, 2^7 = 128, 2^20 = 1048576 -> 6 = 0~63 ; 7 = 0~128 ; 20 = 0~1048575
+
+a = bitpack(values = [14, 29, 875, 18], lenth_bites = tamanho)
 print(a.real)
 
 b = bitpack()
 b.decompress(a)
+```
+
+### Salvar texto comprimido em binario
+
+Salvar o texto:
+
+```
+a = bitpack([14, 29, 875, 18])
+a.save(name = "teste")
+
+b = bitpack(a.lenth_bites, name = "teste")
 ```
 
