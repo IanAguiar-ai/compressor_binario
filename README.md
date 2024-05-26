@@ -28,20 +28,61 @@ Comprime inteiros em bites
 
 ## Funcionamento
 
+### Criar objeto
+
 ```
-b = bitpack()
-b.compress([23, 41, 21, 255])
-print(b.memory)
-print(b.lenth)
-print(b.lenth_bites)
-b.save()
-b.to_bin()
-print(b.real)
+sua_variavel = bitpack()
+```
+
+### Comprimir
+
+Usando a menor quantidade de bits possível:
+
+```
+valores:list = [14, 29, 875, 18]
 
 a = bitpack()
-#resp = a.decompress(b.real, b.lenth_bites)
-resp = a.read(b.lenth_bites)
+a.compress(valores)
+```
+
+Ou ainda:
+
+```
+valores:list = [14, 29, 875, 18]
+
+a = bitpack(valores)
+```
+
+### Descomprimir
+
+Conhecendo o objeto de compressão:
+
+```
+a = bitpack()
+a.compress([23, 41, 21, 255])
+print(a.real)
+
+b = bitpack()
+resp = b.decompress(a.real, a.lenth_bites)
 print(resp)
 ```
 
+Ou ainda:
+
+```
+a = bitpack([14, 29, 875, 18])
+
+b = bitpack()
+b.decompress(a)
+``
+
+### Comprimir em tamanho fixo
+
+```
+a = bitpack([14, 29, 875, 18], [6, 7, 20, 7])
+print(a.real)
+
+b = bitpack()
+b.decompress(a)
+```
 
