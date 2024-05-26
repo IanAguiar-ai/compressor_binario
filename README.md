@@ -74,12 +74,14 @@ a = bitpack([14, 29, 875, 18])
 
 b = bitpack()
 b.decompress(a)
-``
+```
 
 ### Comprimir em tamanho fixo
 
+É passado já na criação da instancia do objeto o tamanho em bits para cada variável:
+
 ```
-a = bitpack([14, 29, 875, 18], [6, 7, 20, 7])
+a = bitpack(values = [14, 29, 875, 18], lenth_bites = [6, 7, 20, 7])
 print(a.real)
 
 b = bitpack()
