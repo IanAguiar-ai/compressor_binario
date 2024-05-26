@@ -4,12 +4,14 @@ Biblioteca que comprime inteiros em bites
 
 class bitpack:
     __slots__ = ("__bytes", "memory", "__lenth", "lenth_bites", "real")
-    def __init__(self) -> None:
+    def __init__(self, values = None) -> None:
         self.__bytes:int = 1
         self.memory:str = None
         self.__lenth:int = None
         self.lenth_bites:list = []
         self.real:bin = None
+        if values != None:
+            self.compress(values)
 
     def __calculate_lenth(self) -> None:
         while len(self.memory) % 8 != 0:
@@ -66,4 +68,4 @@ class bitpack:
         return binary
 
     def __len__(self) -> int:
-        return self.__lenth       
+        return self.__lenth
