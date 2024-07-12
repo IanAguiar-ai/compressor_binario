@@ -108,4 +108,4 @@ class bitpack:
         Ultima modificação: 0.0.1
         Mostra o tamanho em byts usado para armazenar a informação
         """
-        return self.__lenth
+        return self.__lenth  
