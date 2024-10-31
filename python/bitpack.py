@@ -2,6 +2,12 @@
 Biblioteca que comprime inteiros em bites
 """
 
+def decompress(text:str, lenth_bites:list) -> list:
+    """
+    Recebe uma string e converte nos números corretos
+    """
+    
+
 class bitpack:
     __slots__ = ("__bytes", "memory", "__lenth", "lenth_bites", "real", "__fixed_size")
     def __init__(self, values = None, lenth_bites:list = []) -> None:
@@ -67,16 +73,16 @@ class bitpack:
             file.write(self.real)
         self.real = None
 
-    def read(self, lenth_bytes:list, name:str = "compress") -> list:
+    def read(self, lenth_bites:list, name:str = "compress") -> list:
         """
         Ultima modificação: 0.0.1
         Lê um arquivo binario salvo no computador
         """
         with open(f"{name.replace('.bin','')}.bin", "rb") as arq:
             file = arq.read()
-        return self.decompress(file, lenth_bytes)
+        return self.decompress(file, lenth_bites)
 
-    def decompress(self, value:str, lenth_bytes:list = None) -> list:
+    def decompress(self, value:str, lenth_bites:list = None) -> list:
         """
         Ultima modificação: 0.0.1
         Descomprime uma informação que já foi comprimida
@@ -84,7 +90,7 @@ class bitpack:
         if type(value) == bitpack:
             if value.real == None:
                 value.__to_bin()
-            lenth_bytes:list = value.lenth_bites
+            lenth_bites:list = value.lenth_bites
             value:str = value.real
 
         binary_representation:str = ''.join(format(byte, '08b') for byte in value)
@@ -92,7 +98,7 @@ class bitpack:
         binary:list = []
         init:int = 0
         end:int = 0
-        for n in lenth_bytes:
+        for n in lenth_bites:
             end += n
             binary.append(binary_representation[init:end])
             init += n
