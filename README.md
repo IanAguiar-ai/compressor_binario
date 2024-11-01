@@ -232,6 +232,21 @@ Valores descomprimidos:
 
 Compressão que usa a informação de frequência de caracteres em um texto, salvando o dicionário de caracteres e o próprio texto comprimido.
 
+A principal inovação dessa técnica desenvolvida por mim, é que, em vez de utilizar uma lista de bits gerada por uma árvore binária convencional, emprega-se uma árvore desbalanceada composta por sequências de zeros e uns onde um caracter pode ser um valor no meio da árvore e ainda ter filhos. Dessa forma, quanto menor a entropia dos dados, mais eficiente é a compressão. Um exemplo típico onde essa abordagem se destaca são os textos, já que a compressão se beneficia da estrutura de frequência dos caracteres.
+
+A vantagem fundamental desta técnica é o uso eficiente da porção intermediária da árvore. Por exemplo, a atribuição de valores binários ocorre da seguinte maneira:
+
+valor 1 = 01
+valor 2 = 001
+valor 3 = 011
+valor 4 = 0001
+valor 5 = 0011
+valor 6 = 0111
+valor 7 = 00001
+valor 8 = 00011
+valor 9 = 00111
+valor 10 = 01111
+
 ### Pior caso para a quantidade de bits usados em média para \( n \) caracteres com entropia absoluta:
 
 $$ sum_{n = 1}^k n * (n - 1) = sum_{n = 1}^k n² - n = sum_{n = 1}^k n² - sum_{n = 1}^k n = sum_{n = 1}^k n² - (k² + k) / 2 = (k² + k) * (k - 1) / 3 $$
