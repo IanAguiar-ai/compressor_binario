@@ -18,7 +18,13 @@ if __name__ == "__main__":
     print(f"Dict:{b}")
     print(f"Usado: {len(a)/len(example)}")
 
+    c.save("teste")
+
+    a, b = c.open("teste")
+
     d = Frequentist_Compressor()
     e = d.decompress(text = a, dict_bins = b)
     print(e)
     print(c.chars_count)
+
+    

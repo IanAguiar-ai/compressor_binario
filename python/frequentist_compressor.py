@@ -1,45 +1,21 @@
+import ast
 
 class Frequentist_Compressor:
     """
     Compressor that generates the list of characters and compression
     according to the frequency of each character.
 
-    Compression follows the pattern of sequential zeros and ones, for example:
-    a 01
-    b 001
-    c 011
-    d 0001
-    e 0011
-    f 0111
-    g 00001
-    h 00011
-    i 00111
-    j 01111
-    k 000001
-    l 000011
-    m 000111
-    n 001111
-    o 011111
-    p 0000001
-    q 0000011
-    r 0000111
-    s 0001111
-    t 0011111
-    u 0111111
-    v 00000001
-    w 00000011
-    x 00000111
-    y 00001111
-    z 00011111
+    Compression follows the pattern of sequential zeros and ones.
 
     The most used characters will have representation in smaller bits.
     """
 
-    __slots__ = ("chars_to_bin", "bin_to_chars", "chars_count")
+    __slots__ = ("chars_to_bin", "bin_to_chars", "chars_count", "__temporary")
     def __init__(self) -> None:
         self.chars_count:dict = {}
         self.chars_to_bin:dict = {}
         self.bin_to_chars:dict = {}
+        self.__temporary:tuple = None
 
     def compress(self, text:str, dict_bins:dict = None) -> (str, dict):
         """
@@ -71,6 +47,8 @@ class Frequentist_Compressor:
         for i in range(0, len(text_compress), 8):
             temp_bin = text_compress[i : i+8]
             compress_text += chr(int(temp_bin, 2))
+
+        self.__temporary = (compress_text, self.bin_to_chars)
 
         return compress_text, self.bin_to_chars
 
@@ -128,4 +106,26 @@ class Frequentist_Compressor:
                 self.chars_count[char] = 1
             else:
                 self.chars_count[char] += 1
+
+    def save(self, name:str) -> None:
+        """
+        Save the compression
+        """
+        with open(f"{name}.fc", "wb") as arq:
+            arq.write(self.__temporary[0].encode("latin-1"))
+
+        with open(f"{name}.fcdict", "wb") as arq:
+            arq.write(str(self.__temporary[1]).encode("latin-1"))
+
+    def open(self, name:str) -> (str, dict):
+        """
+        Open archive compression
+        """
+        with open(f"{name}.fc", "rb") as arq:
+            text_compress = arq.read().decode("latin-1")
+
+        with open(f"{name}.fcdict", "rb") as arq:
+            dict_compress = ast.literal_eval(arq.read().decode("latin-1"))
+
+        return text_compress, dict_compress
     
