@@ -240,3 +240,55 @@ $$ sum_{n = 1}^k n * (n - 1) = sum_{n = 1}^k n² - n = sum_{n = 1}^k n² - sum_{
 
 $$ ((n - 1)² + (n - 1)) / 2 = (n² - 2n + 1 + n - 1) / 2 = (n² - n) / 2 = x $$
 
+## Uso
+
+### Instanciar
+
+```
+fc = Frequentist_Compressor()
+```
+
+### Compressão
+
+Com dicionário de compressão ótimo:
+
+```
+SEU_TEXTO:str = "Teste para compressor 123456789100 "*1000
+comprimido, dicionario_bits = fc.compress(text = SEU_TEXTO)
+
+print(f"Original: {len(SEU_TEXTO)} bytes\nComprimido: {len(comprimido)}  + {len(str(dicionario_bits))} bytes")
+print(f"Ganho de {(1 - (len(comprimido) + len(str(dicionario_bits)))/len(SEU_TEXTO)) * 100:0.2f}%")
+
+print(f"Comprimido {comprimido}")
+print(f"Dicionario de bits: {dicionario_bits}")
+```
+
+Com dicionário de compressão reutilizado:
+
+```
+comprimido, dicionario_bits = fc.compress(text = SEU_TEXTO, dict_bins = SEU_DICIONARIO_BITS)
+```
+
+### Salvar compressão
+
+Gera dois arquivos, um *.fc* e um *.fcdict*.
+
+```
+fc.save(name = "exemplo")
+```
+
+### Abrir arquivo salvo
+
+```
+comprimido, dicionario_compressao = fc.open(name = "exemplo")
+```
+
+### Descomprimir
+
+```
+descomprimido = fc.decompress(text = comprimido, dict_bins = dicionario_compressao)
+
+print(descomprimido)
+```
+
+
