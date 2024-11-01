@@ -234,15 +234,9 @@ Compressão que usa a informação de frequência de caracteres em um texto, sal
 
 ### Pior caso para a quantidade de bits usados em média para \( n \) caracteres com entropia absoluta:
 
-\[
-\sum_{n=1}^k n \times (n-1) = \sum_{n=1}^k n^2 - n = \sum_{n=1}^k n^2 - \sum_{n=1}^k n = \sum_{n=1}^k n^2 - \frac{k^2 + k}{2} = \frac{(k^2 + k) \times (k - 1)}{3}
-\]
+$$ sum_{n = 1}^k n * (n - 1) = sum_{n = 1}^k n² - n = sum_{n = 1}^k n² - sum_{n = 1}^k n = sum_{n = 1}^k n² - (k² + k) / 2 = (k² + k) * (k - 1) / 3 $$
 
-### Quantidade máxima de bits para \( x \), sendo o número de caracteres diferentes usados:
+### Quantidade máxima de bits para `x`, sendo o número de caracteres diferentes usados:
 
-\[
-\frac{(n-1)^2 + (n-1)}{2} = \frac{n^2 - 2n + 1 + n - 1}{2} = \frac{n^2 - n}{2} = x
-\]
-
-
+$ ((n - 1)² + (n - 1)) / 2 = (n² - 2n + 1 + n - 1) / 2 = (n² - n) / 2 = x $
 
