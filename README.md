@@ -238,5 +238,5 @@ $$ sum_{n = 1}^k n * (n - 1) = sum_{n = 1}^k n² - n = sum_{n = 1}^k n² - sum_{
 
 ### Quantidade máxima de bits para `x`, sendo o número de caracteres diferentes usados:
 
-$ ((n - 1)² + (n - 1)) / 2 = (n² - 2n + 1 + n - 1) / 2 = (n² - n) / 2 = x $
+$$ ((n - 1)² + (n - 1)) / 2 = (n² - 2n + 1 + n - 1) / 2 = (n² - n) / 2 = x $$
 
