@@ -236,16 +236,16 @@ A principal inovação dessa técnica desenvolvida por mim, é que, em vez de ut
 
 A vantagem fundamental desta técnica é o uso eficiente da porção intermediária da árvore. Por exemplo, a atribuição de valores binários ocorre da seguinte maneira:
 
-valor 1 = 01
-valor 2 = 001
-valor 3 = 011
-valor 4 = 0001
-valor 5 = 0011
-valor 6 = 0111
-valor 7 = 00001
-valor 8 = 00011
-valor 9 = 00111
-valor 10 = 01111
+- valor 1 = 01 (caracter de maior frequência)
+- valor 2 = 001
+- valor 3 = 011
+- valor 4 = 0001
+- valor 5 = 0011
+- valor 6 = 0111
+- valor 7 = 00001
+- valor 8 = 00011
+- valor 9 = 00111
+- valor 10 = 01111
 
 ### Pior caso para a quantidade de bits usados em média para \( n \) caracteres com entropia absoluta:
 
