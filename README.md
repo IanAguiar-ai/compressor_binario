@@ -255,7 +255,7 @@ $$ sum_{n = 1}^k n * (n - 1) = sum_{n = 1}^k n² - n = sum_{n = 1}^k n² - sum_{
 
 $$ ((n - 1)² + (n - 1)) / 2 = (n² - 2n + 1 + n - 1) / 2 = (n² - n) / 2 = x $$
 
-## Uso
+## Uso padrão
 
 ### Instanciar
 
@@ -286,7 +286,7 @@ comprimido, dicionario_bits = fc.compress(text = SEU_TEXTO, dict_bins = SEU_DICI
 
 ### Salvar compressão
 
-Gera dois arquivos, um *.fc* e um *.fcdict*.
+Gera dois arquivos, um *.fctext* e um *.fcdict*.
 
 ```
 fc.save(name = "exemplo")
@@ -306,4 +306,21 @@ descomprimido = fc.decompress(text = comprimido, dict_bins = dicionario_compress
 print(descomprimido)
 ```
 
+## Uso no modo texto
 
+É adicionado uma etapa a mais o usuário quiser usar o modo texto, para ele ativar este modo basta na hora de instanciar fazer:
+
+```
+fc_modo_texto = Frequentist_Compressor(text_mode = True)
+```
+
+## Funções auxiliares
+
+### ```to_latin1```
+
+Passa o texto para a codificação *latin_1* que usa 1 byte.
+
+```
+SEU_TEXTO:str = "seu texto aqui"
+SEU_TEXTO = to_latin1(text = SEU_TEXTO)
+```

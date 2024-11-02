@@ -1,4 +1,9 @@
-import ast
+from ast import literal_eval
+from copy import deepcopy
+
+def to_latin1(text:str) -> str:
+    text_latin1 = text.encode("latin-1", errors="replace")
+    return text_latin1.decode("latin-1")
 
 class Frequentist_Compressor:
     """
@@ -10,12 +15,15 @@ class Frequentist_Compressor:
     The most used characters will have representation in smaller bits.
     """
 
-    __slots__ = ("chars_to_bin", "bin_to_chars", "chars_count", "__temporary")
-    def __init__(self) -> None:
+    __slots__ = ("chars_to_bin", "bin_to_chars", "chars_count", "reduce_text", "reduce_text_inverse", "chars_not_have", "__temporary", "__text_mode")
+    def __init__(self, text_mode:bool = False) -> None:
         self.chars_count:dict = {}
         self.chars_to_bin:dict = {}
         self.bin_to_chars:dict = {}
+        self.reduce_text:dict = {}
+        self.chars_not_have:set = set([chr(i) for i in range(255)])
         self.__temporary:tuple = None
+        self.__text_mode:bool = text_mode
 
     def compress(self, text:str, dict_bins:dict = None) -> (str, dict):
         """
@@ -24,13 +32,23 @@ class Frequentist_Compressor:
             dict of bins
         """
 
+        try:
+            text.encode("latin-1")
+        except UnicodeEncodeError:
+            raise ValueError("The text is not representable in latin-1!")
+
+
+        if self.__text_mode:
+            self.chars_not_have:set = self.chars_not_have - set(text)
+            text:str = self.text_frequentist_reducer(text) # PLUS
+
         # If you not have a dict of bins
         if dict_bins == None:
             self.counter(text)
         else:
-            self.chars_count = dict_bins
+            self.chars_count:dict = dict_bins
 
-        list_chars_count = self.organize()
+        list_chars_count:list = self.organize()
 
         for char in list_chars_count:
             self.chars_to_bin[char[0]] = char[2]
@@ -48,7 +66,7 @@ class Frequentist_Compressor:
             temp_bin = text_compress[i : i+8]
             compress_text += chr(int(temp_bin, 2))
 
-        self.__temporary = (compress_text, self.bin_to_chars)
+        self.__temporary = (compress_text, deepcopy(self.bin_to_chars))
 
         return compress_text, self.bin_to_chars
 
@@ -57,6 +75,9 @@ class Frequentist_Compressor:
         Return:
             text of decompress
         """
+        if "##" in dict_bins:
+            convert_text:dict = deepcopy(dict_bins["##"])
+            del dict_bins["##"]
 
         bin_text_char = ""
         for char in text:
@@ -79,6 +100,10 @@ class Frequentist_Compressor:
                     pass
             else:
                 k -= 1
+
+        if "convert_text" in locals():
+            for char in convert_text.keys():
+                text_decompress = text_decompress.replace(char, convert_text[char])
 
         return text_decompress
 
@@ -109,22 +134,73 @@ class Frequentist_Compressor:
         return list_chars_count        
 
     def counter(self, text:str) -> None:
+        """
+        Count number of chr
+        """
         for char in list(text):
             if not char in self.chars_count:
                 self.chars_count[char] = 1
             else:
                 self.chars_count[char] += 1
+
+    def counter_text(self, text:str) -> list:
+        """
+        Count number of text
+        """
+        intermediate_characters:tuple = ("\n",
+                                         "?", "!",
+                                         ";", ":",
+                                         ",", ".",
+                                         "{", "}", "[", "]", "(", ")",
+                                         "\t")
+        
+        for ic in intermediate_characters:
+            text = text.replace(ic, " ")
+        text = text.split(" ")
+
+        dict_text = {}
+        for word in text:
+            if not word in dict_text:
+                dict_text[word] = 1
+            else:
+                dict_text[word] += 1
+
+        return sorted([(key, dict_text[key], (len(key) - 2) * dict_text[key]) for key in dict_text.keys()], key = lambda x : x[2], reverse = True)
+
+    def text_frequentist_reducer(self, text:str) -> str:
+        text_freq = self.counter_text(text)
+
+        chr_not:list = sorted(list(self.chars_not_have), reverse = True)
+
+        inverse_reduce_text:dict = {}
+        n = 0
+        for chr_, qnt, points in text_freq:
+            if qnt > 3 and points > 30 and n < len(chr_not):
+                self.reduce_text[chr_not[n]] = chr_
+                inverse_reduce_text[chr_] = chr_not[n]
+                n += 1
+
+        self.bin_to_chars["##"] = {}
+        for key in inverse_reduce_text.keys():
+            text = text.replace(key, inverse_reduce_text[key])
+            self.bin_to_chars["##"][inverse_reduce_text[key]] = key
+            
+        return text        
     
     def save(self, name:str) -> None:
         """
         Save the compression
         """
-        with open(f"{name}.fc", "wb") as arq:
+        with open(f"{name}.fctext", "wb") as arq:
             arq.write(self.__temporary[0].encode("latin-1"))
 
         dict_bin = ""
         for key in self.__temporary[1]:
-            dict_bin += self.__temporary[1][key]
+            if not type(self.__temporary[1][key]) == dict:
+                dict_bin += self.__temporary[1][key]
+
+        if "##" in self.__temporary[1]:
+            dict_bin += "||" + str(self.__temporary[1]["##"])
             
         with open(f"{name}.fcdict", "wb") as arq:
             arq.write(dict_bin.encode("latin-1"))
@@ -133,16 +209,23 @@ class Frequentist_Compressor:
         """
         Open archive compression
         """
-        with open(f"{name}.fc", "rb") as arq:
+        with open(f"{name}.fctext", "rb") as arq:
             text_compress = arq.read().decode("latin-1")
 
         with open(f"{name}.fcdict", "rb") as arq:
             dict_compress_temp = arq.read().decode("latin-1")
 
+        if dict_compress_temp.find("||") > -1:
+            dict_compress_text = dict_compress_temp[dict_compress_temp.find("||") + 2:]
+            dict_compress_temp = dict_compress_temp[:dict_compress_temp.find("||")]
+        
         bits = self.generate_bins()
         dict_compress = {}
         for i in range(len(dict_compress_temp)):
             dict_compress[bits[i]] = dict_compress_temp[i]
+
+        if "dict_compress_text" in locals():
+            dict_compress["##"] = literal_eval(dict_compress_text)
 
         return text_compress, dict_compress
     
