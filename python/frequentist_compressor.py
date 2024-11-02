@@ -82,15 +82,23 @@ class Frequentist_Compressor:
 
         return text_decompress
 
-    def organize(self) -> list:
+    def generate_bins(self) -> list:
         """
-        Return:
-            List with the chars and count in order
+        Generate list of bins
         """
         bins = []
         for i in range(1, 23 + 1): #x = 23 -> (x^2 + x)/2 >= 256 and x is a int
             for j in range(1, i + 1):
                 bins.append("0"*(i - j + 1) + "1"*j)
+
+        return bins
+
+    def organize(self) -> list:
+        """
+        Return:
+            List with the chars and count in order
+        """
+        bins = self.generate_bins()
 
         list_chars_count = [[key, self.chars_count[key]] for key in self.chars_count.keys()]
         list_chars_count = sorted(list_chars_count, key = lambda x: x[1], reverse = True)
@@ -106,7 +114,7 @@ class Frequentist_Compressor:
                 self.chars_count[char] = 1
             else:
                 self.chars_count[char] += 1
-
+    
     def save(self, name:str) -> None:
         """
         Save the compression
@@ -114,8 +122,12 @@ class Frequentist_Compressor:
         with open(f"{name}.fc", "wb") as arq:
             arq.write(self.__temporary[0].encode("latin-1"))
 
+        dict_bin = ""
+        for key in self.__temporary[1]:
+            dict_bin += self.__temporary[1][key]
+            
         with open(f"{name}.fcdict", "wb") as arq:
-            arq.write(str(self.__temporary[1]).encode("latin-1"))
+            arq.write(dict_bin.encode("latin-1"))
 
     def open(self, name:str) -> (str, dict):
         """
@@ -125,7 +137,12 @@ class Frequentist_Compressor:
             text_compress = arq.read().decode("latin-1")
 
         with open(f"{name}.fcdict", "rb") as arq:
-            dict_compress = ast.literal_eval(arq.read().decode("latin-1"))
+            dict_compress_temp = arq.read().decode("latin-1")
+
+        bits = self.generate_bins()
+        dict_compress = {}
+        for i in range(len(dict_compress_temp)):
+            dict_compress[bits[i]] = dict_compress_temp[i]
 
         return text_compress, dict_compress
     
