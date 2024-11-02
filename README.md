@@ -308,7 +308,7 @@ print(descomprimido)
 
 ## Uso no modo texto
 
-É adicionado uma etapa a mais o usuário quiser usar o modo texto, para ele ativar este modo basta na hora de instanciar fazer:
+Uma etapa adicional é incluída caso o usuário deseje utilizar o modo texto. Para ativar este modo, basta especificá-lo no momento da instância da classe da seguinte forma:
 
 ```
 fc_modo_texto = Frequentist_Compressor(text_mode = True)
@@ -318,7 +318,7 @@ fc_modo_texto = Frequentist_Compressor(text_mode = True)
 
 ### ```to_latin1```
 
-Passa o texto para a codificação *latin_1* que usa 1 byte.
+O texto é convertido para a codificação latin-1, que utiliza 1 byte por caractere.
 
 ```
 SEU_TEXTO:str = "seu texto aqui"
