@@ -6,7 +6,7 @@ import io
 
 from random import random
 
-TEST_7Z = True
+TEST_7Z:bool = True
 if TEST_7Z:
     import pylzma
 
@@ -104,6 +104,12 @@ Com os temas abordados, questões principalmente relacionadas a precipitação e
 
     for i in [2**i for i in range(5)]:
         TEXTOS.append("a"*10*i + "b"*3*i + " "*5*i + "c"*15*i + " paralelepipedos")
+
+    for i in [2**i for i in range(5, 16)]:
+        temp = ""
+        for _ in range(i):
+            temp += str(int(random()*random()*random()*10))
+        TEXTOS.append(temp)
 
     for i in range(len(TEXTOS)):
         TEXTOS[i] = to_latin1(TEXTOS[i])
