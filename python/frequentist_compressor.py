@@ -1,5 +1,5 @@
 from ast import literal_eval
-from copy import deepcopy
+from copy import deepcopy, copy
 
 def to_latin1(text:str) -> str:
     text_latin1 = text.encode("latin-1", errors="replace")
@@ -15,12 +15,13 @@ class Frequentist_Compressor:
     The most used characters will have representation in smaller bits.
     """
 
-    __slots__ = ("chars_to_bin", "bin_to_chars", "chars_count", "reduce_text", "reduce_text_inverse", "chars_not_have", "__temporary", "__text_mode")
+    __slots__ = ("chars_to_bin", "bin_to_chars", "chars_count", "reduce_text", "reduce_text_inverse", "chars_not_have", "reduce_repetition", "__temporary", "__text_mode")
     def __init__(self, text_mode:bool = False) -> None:
         self.chars_count:dict = {}
         self.chars_to_bin:dict = {}
         self.bin_to_chars:dict = {}
         self.reduce_text:dict = {}
+        self.reduce_repetition:dict = {}
         self.chars_not_have:set = set([chr(i) for i in range(255)])
         self.__temporary:tuple = None
         self.__text_mode:bool = text_mode
@@ -36,7 +37,6 @@ class Frequentist_Compressor:
             text.encode("latin-1")
         except UnicodeEncodeError:
             raise ValueError("The text is not representable in latin-1!")
-
 
         if self.__text_mode:
             self.chars_not_have:set = self.chars_not_have - set(text)
@@ -77,7 +77,9 @@ class Frequentist_Compressor:
         """
         if "##" in dict_bins:
             convert_text:dict = deepcopy(dict_bins["##"])
+            convert_repetitions:dict = deepcopy(dict_bins["++"])
             del dict_bins["##"]
+            del dict_bins["++"]
 
         bin_text_char = ""
         for char in text:
@@ -104,6 +106,15 @@ class Frequentist_Compressor:
         if "convert_text" in locals():
             for char in convert_text.keys():
                 text_decompress = text_decompress.replace(char, convert_text[char])
+
+        if "convert_repetitions" in locals():
+            text_temp:str = copy(text_decompress)
+            text_decompress:str = ""
+            for i in range(len(text_temp)):
+                if not text_temp[i] in convert_repetitions:
+                    text_decompress += text_temp[i]
+                else:
+                    text_decompress += text_temp[i-1] * convert_repetitions[text_temp[i]]
 
         return text_decompress
 
@@ -168,6 +179,10 @@ class Frequentist_Compressor:
         return sorted([(key, dict_text[key], (len(key) - 2) * dict_text[key]) for key in dict_text.keys()], key = lambda x : x[2], reverse = True)
 
     def text_frequentist_reducer(self, text:str) -> str:
+        """
+        Plus to text
+        """
+        # Word reducer
         text_freq = self.counter_text(text)
 
         chr_not:list = sorted(list(self.chars_not_have), reverse = True)
@@ -178,14 +193,78 @@ class Frequentist_Compressor:
             if qnt > 3 and points > 30 and n < len(chr_not):
                 self.reduce_text[chr_not[n]] = chr_
                 inverse_reduce_text[chr_] = chr_not[n]
+                self.chars_not_have.remove(chr_not[n])
                 n += 1
 
         self.bin_to_chars["##"] = {}
         for key in inverse_reduce_text.keys():
             text = text.replace(key, inverse_reduce_text[key])
             self.bin_to_chars["##"][inverse_reduce_text[key]] = key
-            
-        return text        
+
+        # Repetition reducer
+        numbers_repetition:dict = {}
+        for i in range(len(text) - 1):
+            repetition = self.number_of_repetition(text[i:])
+            if repetition >= 6:
+                if not repetition in numbers_repetition:
+                    numbers_repetition[repetition] = 1
+                else:
+                    numbers_repetition[repetition] += 1
+
+        list_numbers_repetition = []
+        for key in numbers_repetition.keys():
+            list_numbers_repetition.append((key, numbers_repetition[key]))
+        list_numbers_repetition = sorted(sorted(list_numbers_repetition, key = lambda x : x[0], reverse = True), key = lambda x : x[1], reverse = True)
+
+        temp_l_n = set()
+        final_repetition = []
+
+        for item in list_numbers_repetition:
+            if item[1] not in temp_l_n:
+                final_repetition.append(item)
+                temp_l_n.add(item[1])
+        final_repetition = sorted(final_repetition, key = lambda x : x[0], reverse = True)
+
+        inverse_reduce:dict = {}
+        chr_not:list = sorted(list(self.chars_not_have), reverse = True)
+        for i in range(len(final_repetition)):
+            if i < len(chr_not):
+                self.reduce_repetition[chr_not[i]] = final_repetition[i][0]
+                inverse_reduce[final_repetition[i][0]] = chr_not[i]
+                self.chars_not_have.remove(chr_not[i])
+
+        final_text:str = ""
+        n:int = 0
+        try:
+            max_value:int = max(list(self.reduce_repetition.values()))
+        except ValueError:
+            max_value:int = 0
+        
+        len_text:int = len(text)
+        while n < len_text:
+            repetition = self.number_of_repetition(text[n: min(n + max_value + 1, len_text)])
+            if repetition in inverse_reduce:
+                final_text += text[n] + inverse_reduce[repetition]
+                n += repetition + 1
+            else:
+                final_text += text[n]
+                n += 1
+
+        self.bin_to_chars["++"] = self.reduce_repetition
+
+        return final_text
+
+    def number_of_repetition(self, text:str) -> int:
+        """
+        Count repetition of character
+        """
+        repetition:int = 0
+        for i in range(1, len(text)):
+            if text[0] == text[i]:
+                repetition += 1
+            else:
+                return repetition
+        return repetition
     
     def save(self, name:str) -> None:
         """
@@ -200,7 +279,10 @@ class Frequentist_Compressor:
                 dict_bin += self.__temporary[1][key]
 
         if "##" in self.__temporary[1]:
-            dict_bin += "||" + str(self.__temporary[1]["##"])
+            dict_bin += "||" + str(self.__temporary[1]["##"]).replace(": ", ":").replace(", ", ",")
+
+        if "++" in self.__temporary[1]:
+            dict_bin += "++" + str(self.__temporary[1]["++"]).replace(": ", ":").replace(", ", ",")
             
         with open(f"{name}.fcdict", "wb") as arq:
             arq.write(dict_bin.encode("latin-1"))
@@ -216,7 +298,8 @@ class Frequentist_Compressor:
             dict_compress_temp = arq.read().decode("latin-1")
 
         if dict_compress_temp.find("||") > -1:
-            dict_compress_text = dict_compress_temp[dict_compress_temp.find("||") + 2:]
+            dict_compress_text = dict_compress_temp[dict_compress_temp.find("||") + 2: dict_compress_temp.find("++")]
+            dict_compress_times = dict_compress_temp[dict_compress_temp.find("++") + 2 :]
             dict_compress_temp = dict_compress_temp[:dict_compress_temp.find("||")]
         
         bits = self.generate_bins()
@@ -226,6 +309,9 @@ class Frequentist_Compressor:
 
         if "dict_compress_text" in locals():
             dict_compress["##"] = literal_eval(dict_compress_text)
+
+        if "dict_compress_temp" in locals():
+            dict_compress["++"] = literal_eval(dict_compress_times)
 
         return text_compress, dict_compress
     

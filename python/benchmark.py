@@ -2,10 +2,13 @@ from bitpack import bitpack
 from frequentist_compressor import Frequentist_Compressor, to_latin1
 
 import zipfile
-import pylzma
 import io
 
 from random import random
+
+TEST_7Z = True
+if TEST_7Z:
+    import pylzma
 
 if __name__ == "__main__":
 
@@ -24,6 +27,9 @@ if __name__ == "__main__":
         SEU_TEXTO:str = arq.read()
     TEXTOS.append(SEU_TEXTO)
 
+    with open("/home/user/Documents/estudos/palestras/palestra/roteiro", "r") as arq:
+        SEU_TEXTO:str = arq.read()
+    TEXTOS.append(SEU_TEXTO)
 
     SEU_TEXTO:str = """A programacao e uma das habilidades mais valiosas no mercado de trabalho atual. Com a crescente digitalizacao das empresas e a expansao das tecnologias, dominar linguagens de programacao pode abrir muitas portas. Profissionais que entendem como criar algoritmos, desenvolver solucoes e automatizar processos ganham destaque, ja que essas habilidades sao aplicaveis em diversos setores, como finance, marketing, saude e educacao.
 Linguagens como Python, JavaScript e C++ sao populares por conta de suas versatilidades e funcionalidades. Python, por exemplo, e amplamente usado em analise de dados e aprendizado de maquina, areas que estao em alta demanda. JavaScript e muito presente no desenvolvimento web, possibilitando a criacao de sites interativos e dinamicos, enquanto o C++ e comumente utilizado para criar aplicacoes de alto desempenho, como jogos e sistemas operacionais.
@@ -94,8 +100,10 @@ Com os temas abordados, questões principalmente relacionadas a precipitação e
             for __ in range(4):
                 telefone += str(int(random()*10))
             telefone += "\n"
+        TEXTOS.append(telefone)
 
-        TEXTOS.append(telefone)           
+    for i in [2**i for i in range(5)]:
+        TEXTOS.append("a"*10*i + "b"*3*i + " "*5*i + "c"*15*i + " paralelepipedos")
 
     for i in range(len(TEXTOS)):
         TEXTOS[i] = to_latin1(TEXTOS[i])
@@ -122,17 +130,17 @@ Com os temas abordados, questões principalmente relacionadas a precipitação e
         fc = Frequentist_Compressor(text_mode = True)
         comprimido, dicionario_bits = fc.compress(text = SEU_TEXTO)
 
-        print(f"Comprimido: {len(comprimido)} + {len(dicionario_bits) + len(str(dicionario_bits['##']))} bytes = {(len(comprimido) + len(dicionario_bits) + len(str(dicionario_bits['##'])))} bytes (TEXT MODE)")
-        print(f"Ganho de {(1 - (len(comprimido) + len(dicionario_bits) + len(str(dicionario_bits['##'])))/len(SEU_TEXTO)) * 100:0.2f}%")
+        print(f"Comprimido: {len(comprimido)} + {len(dicionario_bits) + len(str(dicionario_bits['++'])) + len(str(dicionario_bits['##']))} bytes = {(len(comprimido) + len(dicionario_bits) + len(str(dicionario_bits['++'])) + len(str(dicionario_bits['##'])))} bytes (TEXT MODE)")
+        print(f"Ganho de {(1 - (len(comprimido) + len(dicionario_bits) + len(str(dicionario_bits['++'])) + len(str(dicionario_bits['##'])))/len(SEU_TEXTO)) * 100:0.2f}%")
         resultados["FC_TEXT_MODE"].append((len(comprimido) + len(dicionario_bits) + len(str(dicionario_bits['##']))))
 
 
 ##        contagem = [(i[0], i[1]) for i in zip(fc.chars_count.keys(), fc.chars_count.values())]
 ##        contagem = sorted(contagem, key = lambda x:x[1], reverse = True)
-
+##
 ##        descomprimido = fc.decompress(comprimido, dicionario_bits)
 ##        print(f"Descomprimido: {descomprimido == SEU_TEXTO}")
-
+##
 ##        total_acumulado = 0
 ##        total = sum(fc.chars_count.values())
 ##        print(f"Dicionario de bits:")
@@ -147,7 +155,7 @@ Com os temas abordados, questões principalmente relacionadas a precipitação e
 ##                print(f"\t'{c[0]}' ({n:3.0f} : {proporcao*100:2.03f}% : {c[1]/total*100:5.02f}%): {c[1]:7} -> {bits:3}:{bits_total:10} ({bits_total/len(comprimido) *100:0.02f}%)")
 ##            else:
 ##                print(f"\t'\\n'({n:3.0f} : {proporcao*100:2.03f}% : {c[1]/total*100:5.02f}%): {c[1]:7} -> {bits:3}:{bits_total:10} ({bits_total/len(comprimido) *100:0.2f})")
-
+##
 ##        fc.save("teste")
 ##
 ##        fc_2 = Frequentist_Compressor()
@@ -175,19 +183,22 @@ Com os temas abordados, questões principalmente relacionadas a precipitação e
         ##############################################################################################################
         #7z
         # Criar um buffer de bytes para armazenar o arquivo comprimido
-        buffer = io.BytesIO()
+        if TEST_7Z:
+            buffer = io.BytesIO()
 
-        # Comprimir o texto usando LZMA (7z)
-        conteudo_comprimido = pylzma.compress(SEU_TEXTO.encode("utf-8"))
+            # Comprimir o texto usando LZMA (7z)
+            conteudo_comprimido = pylzma.compress(SEU_TEXTO.encode("utf-8"))
 
-        # Escrever o conteúdo comprimido no buffer
-        buffer.write(conteudo_comprimido)
+            # Escrever o conteúdo comprimido no buffer
+            buffer.write(conteudo_comprimido)
 
-        # Obter o conteúdo do buffer
-        conteudo_7z = buffer.getvalue()
+            # Obter o conteúdo do buffer
+            conteudo_7z = buffer.getvalue()
 
-        print(f"Comprimido: {len(conteudo_7z)} bytes")
-        print(f"Ganho de {(1 - len(conteudo_7z)/len(SEU_TEXTO)) * 100:0.2f}% (7z)")
-        resultados["7Z"].append(len(conteudo_7z))
+            print(f"Comprimido: {len(conteudo_7z)} bytes")
+            print(f"Ganho de {(1 - len(conteudo_7z)/len(SEU_TEXTO)) * 100:0.2f}% (7z)")
+            resultados["7Z"].append(len(conteudo_7z))
         
         print("#" * 70)
+
+    print(resultados)
