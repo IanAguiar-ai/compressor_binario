@@ -27,9 +27,24 @@ if __name__ == "__main__":
         SEU_TEXTO:str = arq.read()
     TEXTOS.append(SEU_TEXTO)
 
-    with open("/home/user/Documents/estudos/palestras/palestra/roteiro", "r") as arq:
-        SEU_TEXTO:str = arq.read()
-    TEXTOS.append(SEU_TEXTO)
+    try:
+        with open("/home/user/Documents/__git_repos__/compressor_binario/README.md", "r") as arq:
+            SEU_TEXTO:str = arq.read()
+        TEXTOS.append(SEU_TEXTO)
+        
+        with open("/home/user/Documents/estudos/palestras/palestra/roteiro", "r") as arq:
+            SEU_TEXTO:str = arq.read()
+        TEXTOS.append(SEU_TEXTO)
+
+        with open("/home/user/Documents/__git_repos__/card_game_ascii/arts.py", "r") as arq:
+            SEU_TEXTO:str = arq.read()
+        TEXTOS.append(SEU_TEXTO)
+
+        with open("/home/user/Documents/__git_repos__/card_game_ascii/engine_card_game.py", "r") as arq:
+            SEU_TEXTO:str = arq.read()
+        TEXTOS.append(SEU_TEXTO)
+    except:
+        pass
 
     SEU_TEXTO:str = """A programacao e uma das habilidades mais valiosas no mercado de trabalho atual. Com a crescente digitalizacao das empresas e a expansao das tecnologias, dominar linguagens de programacao pode abrir muitas portas. Profissionais que entendem como criar algoritmos, desenvolver solucoes e automatizar processos ganham destaque, ja que essas habilidades sao aplicaveis em diversos setores, como finance, marketing, saude e educacao.
 Linguagens como Python, JavaScript e C++ sao populares por conta de suas versatilidades e funcionalidades. Python, por exemplo, e amplamente usado em analise de dados e aprendizado de maquina, areas que estao em alta demanda. JavaScript e muito presente no desenvolvimento web, possibilitando a criacao de sites interativos e dinamicos, enquanto o C++ e comumente utilizado para criar aplicacoes de alto desempenho, como jogos e sistemas operacionais.
