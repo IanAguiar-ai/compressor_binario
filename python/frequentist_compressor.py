@@ -1,6 +1,9 @@
 from ast import literal_eval
 from copy import deepcopy, copy
 
+FILE_TYPE = "ifc"
+DIVISION = chr(169) * 2
+
 def to_latin1(text:str) -> str:
     text_latin1 = text.encode("latin-1", errors="replace")
     return text_latin1.decode("latin-1")
@@ -270,32 +273,32 @@ class Frequentist_Compressor:
         """
         Save the compression
         """
-        with open(f"{name}.fctext", "wb") as arq:
-            arq.write(self.__temporary[0].encode("latin-1"))
-
-        dict_bin = ""
+        _bin = ""
         for key in self.__temporary[1]:
             if not type(self.__temporary[1][key]) == dict:
-                dict_bin += self.__temporary[1][key]
+                _bin += self.__temporary[1][key]
 
         if "##" in self.__temporary[1]:
-            dict_bin += "||" + str(self.__temporary[1]["##"]).replace(": ", ":").replace(", ", ",")
+            _bin += "||" + str(self.__temporary[1]["##"]).replace(": ", ":").replace(", ", ",")
 
         if "++" in self.__temporary[1]:
-            dict_bin += "++" + str(self.__temporary[1]["++"]).replace(": ", ":").replace(", ", ",")
+            _bin += "++" + str(self.__temporary[1]["++"]).replace(": ", ":").replace(", ", ",")
+
+        _bin += DIVISION + self.__temporary[0]
             
-        with open(f"{name}.fcdict", "wb") as arq:
-            arq.write(dict_bin.encode("latin-1"))
+        with open(f"{name}.{FILE_TYPE}", "wb") as arq:
+            arq.write(_bin.encode("latin-1"))
 
     def open(self, name:str) -> (str, dict):
         """
         Open archive compression
         """
-        with open(f"{name}.fctext", "rb") as arq:
-            text_compress = arq.read().decode("latin-1")
-
-        with open(f"{name}.fcdict", "rb") as arq:
+        with open(f"{name}.{FILE_TYPE}", "rb") as arq:
             dict_compress_temp = arq.read().decode("latin-1")
+
+        text_compress:str = dict_compress_temp[dict_compress_temp.find(DIVISION) + 2:]
+        dict_compress_temp:str = dict_compress_temp[:dict_compress_temp.find(DIVISION)]
+        print(f">>>>>>>>>>>>>{dict_compress_temp}<<<<<<<<<<<<<,")
 
         if dict_compress_temp.find("||") > -1:
             dict_compress_text = dict_compress_temp[dict_compress_temp.find("||") + 2: dict_compress_temp.find("++")]
