@@ -310,7 +310,7 @@ class Frequentist_Compressor:
         if "dict_compress_text" in locals():
             dict_compress["##"] = literal_eval(dict_compress_text)
 
-        if "dict_compress_temp" in locals():
+        if "dict_compress_times" in locals():
             dict_compress["++"] = literal_eval(dict_compress_times)
 
         return text_compress, dict_compress
