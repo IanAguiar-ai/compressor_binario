@@ -286,7 +286,7 @@ comprimido, dicionario_bits = fc.compress(text = SEU_TEXTO, dict_bins = SEU_DICI
 
 ### Salvar compressão
 
-Gera dois arquivos, um *.fctext* e um *.fcdict*.
+Gera dois arquivos, um *.frcp*.
 
 ```
 fc.save(name = "exemplo")

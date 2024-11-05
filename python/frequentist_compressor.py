@@ -1,7 +1,7 @@
 from ast import literal_eval
 from copy import deepcopy, copy
 
-FILE_TYPE = "ifc"
+FILE_TYPE = "frcp"
 DIVISION = chr(169) * 2
 
 def to_latin1(text:str) -> str:
@@ -298,7 +298,6 @@ class Frequentist_Compressor:
 
         text_compress:str = dict_compress_temp[dict_compress_temp.find(DIVISION) + 2:]
         dict_compress_temp:str = dict_compress_temp[:dict_compress_temp.find(DIVISION)]
-        print(f">>>>>>>>>>>>>{dict_compress_temp}<<<<<<<<<<<<<,")
 
         if dict_compress_temp.find("||") > -1:
             dict_compress_text = dict_compress_temp[dict_compress_temp.find("||") + 2: dict_compress_temp.find("++")]
