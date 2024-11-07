@@ -180,13 +180,13 @@ Com os temas abordados, questões principalmente relacionadas a precipitação e
 ##            else:
 ##                print(f"\t'\\n'({n:3.0f} : {proporcao*100:2.03f}% : {c[1]/total*100:5.02f}%): {c[1]:7} -> {bits:3}:{bits_total:10} ({bits_total/len(comprimido) *100:0.2f})")
 ##
-##        name_file = "teste_" + str(int(random()*100_000))
-##        fc.save(name_file)
-##
-##        fc_2 = Frequentist_Compressor()
-##        a, b = fc_2.open(name_file)
-##        c = fc_2.decompress(a, b)
-##        print(f"Possível salvar: {c == SEU_TEXTO}")
+        name_file = "teste_" + str(int(random()*100_000))
+        fc.save(name_file)
+
+        fc_2 = Frequentist_Compressor()
+        a, b = fc_2.open(name_file)
+        c = fc_2.decompress(a, b)
+        print(f"Possível salvar: {c == SEU_TEXTO}")
 
         ##############################################################################################################
         #ZIP

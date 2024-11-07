@@ -1,7 +1,7 @@
 from ast import literal_eval
 from copy import deepcopy, copy
 
-FILE_TYPE = "frcp"
+FILE_TYPE = "fqcp"
 DIVISION = chr(169) * 2
 
 def to_latin1(text:str) -> str:
