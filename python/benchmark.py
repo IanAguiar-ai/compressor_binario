@@ -6,13 +6,25 @@ import io
 
 from random import random
 
-TEST_7Z:bool = False
+TEST_7Z:bool = True
+TEST_IOT:bool = True
+
 if TEST_7Z:
     import pylzma
+
+if TEST_IOT:
+    import zlib
 
 if __name__ == "__main__":
 
     TEXTOS = []
+
+    SEU_TEXTO = ""
+    for j in [1.5**i for i in range(5, 15)]:
+        SEU_TEXO = 0
+        for i in range(int(j)):
+            SEU_TEXTO += f"{chr(int(random()*random()*10+random()*random()*random()*random()*96)+62)}"
+        TEXTOS.append(SEU_TEXTO)
     
     SEU_TEXTO = ""
     for i in range(50_000):
@@ -136,7 +148,8 @@ Com os temas abordados, questões principalmente relacionadas a precipitação e
                   "FC_NORMAL_MODE":[],
                   "FC_TEXT_MODE":[],
                   "ZIP":[],
-                  "7Z":[]}
+                  "7Z":[],
+                  "IOT":[]}
 
     ##############################################################################################################
 
@@ -180,13 +193,13 @@ Com os temas abordados, questões principalmente relacionadas a precipitação e
 ##            else:
 ##                print(f"\t'\\n'({n:3.0f} : {proporcao*100:2.03f}% : {c[1]/total*100:5.02f}%): {c[1]:7} -> {bits:3}:{bits_total:10} ({bits_total/len(comprimido) *100:0.2f})")
 ##
-        name_file = "teste_" + str(int(random()*100_000))
-        fc.save(name_file)
-
-        fc_2 = Frequentist_Compressor()
-        a, b = fc_2.open(name_file)
-        c = fc_2.decompress(a, b)
-        print(f"Possível salvar: {c == SEU_TEXTO}")
+##        name_file = "teste_" + str(int(random()*100_000))
+##        fc.save(name_file)
+##
+##        fc_2 = Frequentist_Compressor()
+##        a, b = fc_2.open(name_file)
+##        c = fc_2.decompress(a, b)
+##        print(f"Possível salvar: {c == SEU_TEXTO}")
 
         ##############################################################################################################
         #ZIP
@@ -223,6 +236,17 @@ Com os temas abordados, questões principalmente relacionadas a precipitação e
             print(f"Comprimido: {len(conteudo_7z)} bytes")
             print(f"Ganho de {(1 - len(conteudo_7z)/len(SEU_TEXTO)) * 100:0.2f}% (7z)")
             resultados["7Z"].append(len(conteudo_7z))
+
+        ##############################################################################################################
+        #IOT
+        # Criar um buffer de bytes para armazenar o arquivo comprimido
+        if TEST_IOT:
+            IOT_Z = zlib.compress(SEU_TEXTO.encode("latin-1"))
+            IOT_Z = IOT_Z.decode("latin-1")
+
+            print(f"Comprimido: {len(IOT_Z)} bytes")
+            print(f"Ganho de {(1 - len(IOT_Z)/len(SEU_TEXTO)) * 100:0.2f}% (Zlib IOT Deflate)")
+            resultados["IOT"].append(len(IOT_Z))
         
         print("#" * 70)
 
