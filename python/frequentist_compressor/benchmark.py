@@ -1,4 +1,3 @@
-from bitpack import bitpack
 from frequentist_compressor import Frequentist_Compressor, to_latin1
 
 import zipfile
@@ -30,14 +29,17 @@ if __name__ == "__main__":
     for i in range(50_000):
         SEU_TEXTO += f"{chr(int(random()*random()*10+random()*random()*random()*random()*96)+62)}"
     TEXTOS.append(SEU_TEXTO)
-    
-    with open("bitpack.py", "r") as arq:
-        SEU_TEXTO:str = arq.read()
-    TEXTOS.append(SEU_TEXTO)
 
-    with open("compressor_binario.py", "r") as arq:
-        SEU_TEXTO:str = arq.read()
-    TEXTOS.append(SEU_TEXTO)
+    try:
+        with open("bitpack.py", "r") as arq:
+            SEU_TEXTO:str = arq.read()
+        TEXTOS.append(SEU_TEXTO)
+
+        with open("compressor_binario.py", "r") as arq:
+            SEU_TEXTO:str = arq.read()
+        TEXTOS.append(SEU_TEXTO)
+    except:
+        pass
 
     try:
         with open("/home/user/Documents/__git_repos__/compressor_binario/README.md", "r") as arq:
