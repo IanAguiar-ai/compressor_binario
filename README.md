@@ -324,3 +324,7 @@ O texto é convertido para a codificação latin-1, que utiliza 1 byte por carac
 SEU_TEXTO:str = "seu texto aqui"
 SEU_TEXTO = to_latin1(text = SEU_TEXTO)
 ```
+
+# `low_compressor_iot.py`
+
+Mesma forma de uso do `frequentist_compressor.py`, mas sem o modo 'text', ganha 1 byte na compressão, ideal para pacotes entre 90 bytes e 300 bytes, ou seja, dentro do range de aplicações de IoT.

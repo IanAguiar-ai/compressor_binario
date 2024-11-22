@@ -99,6 +99,8 @@ O gerenciamento de tempo e um dos pilares para uma rotina produtiva e equilibrad
 ##        a, b = fc.open(name_file)
 ##        c = fc.decompress(a, b)
 ##        print(f"Possível salvar: {c == SEU_TEXTO}")
+##        print(SEU_TEXTO)
+##        print(c)
 
         ##############################################################################################################
         #ZIP
