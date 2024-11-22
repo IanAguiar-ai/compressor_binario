@@ -61,6 +61,7 @@ class Frequentist_Compressor:
         for char in text:
             text_compress += self.chars_to_bin[char]
 
+        text_compress += "0"
         while len(text_compress)/8 != len(text_compress)//8:
             text_compress += "0"
 
